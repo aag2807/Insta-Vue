@@ -5,6 +5,8 @@
 
 // Configuration for your app
 // https://quasar.dev/quasar-cli/quasar-conf-js
+let API_LOCAL = 'http://localhost:3000';
+let API_PROD = 'http://insta-vue1.herokuapp.com';
 
 module.exports = function (/* ctx */) {
   return {
@@ -44,7 +46,7 @@ module.exports = function (/* ctx */) {
     // Full list of options: https://quasar.dev/quasar-cli/quasar-conf-js#Property%3A-build
     build: {
       env:{
-        API: 'http://localhost:3000'
+        API: API_LOCAL, //local or production
       },
       vueRouterMode: 'hash', // available values: 'hash', 'history'
 

@@ -70,7 +70,7 @@
             <q-item class="fixed">
                 <q-item-section avatar>
                     <q-avatar size="48px">
-                        <img src="https://lh3.googleusercontent.com/proxy/pLfu0zDqhNjvb1j7BaEXgx4qdVXhlT1awYJk3lj2PEexFtZGYCIWbrQuMXE3tYxNJ_LZG3Xq6dB0_lzODfumcpApgyF6-ZFI2rIgbd9-g-ZPEqMU9Suy1g" alt="">
+                        <img src="https://www.clipartmax.com/png/middle/258-2582267_circled-user-male-skin-type-1-2-icon-male-user-icon.png" alt="">
                     </q-avatar>
                 </q-item-section>
                 <q-item-section>
