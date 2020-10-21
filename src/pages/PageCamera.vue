@@ -21,6 +21,7 @@
       <q-btn
         v-if="hasCameraSupport"
         @click="captureImage"
+        :disable="imageCaptured"
         size="lg"
         round
         color="grey-10"
@@ -45,7 +46,7 @@
         <q-input
           class="col col-sm-6"
           dense
-          label="Caption"
+          label="Caption *"
           v-model="post.caption"
         />
       </div>
@@ -75,6 +76,7 @@
           @click="addPost"
           unelevated
           rounded
+          :disable="!post.caption || !post.photo"
           color="primary"
           label="Post Image" />
       </div>
@@ -141,7 +143,7 @@ export default {
     },
     captureImageFallback(file) {
       this.post.photo = file;
-      
+
       let canvas = this.$refs.canvas
       let context = canvas.getContext("2d");
 
@@ -194,7 +196,7 @@ export default {
     getCityAndCountry(position){
       let {latitude, longitude} = position.coords;
       let ApiUrl = `https://geocode.xyz/${latitude},${longitude}?json=1`
-    
+
       this.$axios.get(ApiUrl)
       .then(response => {
         this.locationSuccess(response)
@@ -219,6 +221,7 @@ export default {
 
     },
     addPost(){
+        this.$q.loading.show()
       let formData = new FormData();
       formData.append('id', this.post.id);
       formData.append('caption', this.post.caption);
@@ -229,8 +232,34 @@ export default {
       this.$axios.post(`${process.env.API}/createPost`, formData)
       .then(res => {
         console.log(res)
+        // after taking photo rout back to main page
+        this.$router.push('/')
+        // notification after beind redirected to main page
+        this.$q.notify({
+          message: 'Post Created.',
+          actions: [
+          { label: 'Dismiss', color: 'white' },
+          { label: 'Post another', color: 'white',
+            handler: () => {
+              this.$router.push('/camera')
+            } 
+          }
+          ,
+        ]
+        }
+      )
+        this.$q.loading.hide()
       })
-      .catch(err => console.log('error'))
+      .catch(err => {
+        console.log('error')
+        this.$q.notify({
+          color: 'red',
+          actions: [
+            { label: 'Sorry post not created', color: 'white'}
+          ]
+        })
+        this.$q.loading.hide()
+        })
     },
 
 
@@ -238,7 +267,7 @@ export default {
   mounted() {
     this.initCamera();
   },
-  
+
   beforeDestroy(){
     if(this.hasCameraSupport){
       this.disableCamera()
