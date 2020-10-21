@@ -128,7 +128,7 @@ export default {
 </script>
 
 <style lang="sass">
-.card-post
-  q-img
+.card-post 
+  q-img 
     min-height: 200px
 </style>
