@@ -1,4 +1,4 @@
-<h2 align="center">Single Page No Framework JS App Clone</h2>
+<h2 align="center">Instagram Clone Vue</h2>
 
 <p align="center">
     <img alt="VanillaJS" src="https://upload.wikimedia.org/wikipedia/commons/thumb/9/95/Vue.js_Logo_2.svg/1184px-Vue.js_Logo_2.svg.png" width="60" />
