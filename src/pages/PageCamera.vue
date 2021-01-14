@@ -66,7 +66,8 @@
               round
               dense
               flat
-              icon="eva-navigation-2-outline" />
+              icon="eva-navigation-2-outline"
+            />
           </template>
         </q-input>
       </div>
@@ -78,7 +79,8 @@
           rounded
           :disable="!post.caption || !post.photo"
           color="primary"
-          label="Post Image" />
+          label="Post Image"
+        />
       </div>
     </div>
   </q-page>
@@ -97,37 +99,37 @@ export default {
         caption: "",
         location: "",
         photo: null,
-        date: Date.now()
+        date: Date.now(),
       },
       imageCaptured: false,
       imageUpload: [],
       hasCameraSupport: true,
-      locationLoading: false
+      locationLoading: false,
     };
   },
   computed: {
-    locationSupported(){
-      if('geolocation' in navigator) return true
-      return false
-    }
+    locationSupported() {
+      if ("geolocation" in navigator) return true;
+      return false;
+    },
   },
   methods: {
     initCamera() {
       navigator.mediaDevices
         .getUserMedia({
-          video: true
+          video: true,
         })
-        .then(stream => {
+        .then((stream) => {
           this.$refs.video.srcObject = stream;
         })
-        .catch(error => {
+        .catch((error) => {
           this.hasCameraSupport = false;
         });
     },
-    disableCamera(){
-     this.$refs.video.srcObject.getVideoTracks().forEach(track => {
-       track.stop();
-     })
+    disableCamera() {
+      this.$refs.video.srcObject.getVideoTracks().forEach((track) => {
+        track.stop();
+      });
     },
     captureImage() {
       let { video, canvas } = this.$refs;
@@ -144,17 +146,17 @@ export default {
     captureImageFallback(file) {
       this.post.photo = file;
 
-      let canvas = this.$refs.canvas
+      let canvas = this.$refs.canvas;
       let context = canvas.getContext("2d");
 
       var reader = new FileReader();
-      reader.onload =(event) => {
+      reader.onload = (event) => {
         var img = new Image();
-        img.onload = ()=> {
+        img.onload = () => {
           canvas.width = img.width;
           canvas.height = img.height;
           context.drawImage(img, 0, 0);
-          this.imageCaptured = true
+          this.imageCaptured = true;
         };
         img.src = event.target.result;
       };
@@ -166,10 +168,7 @@ export default {
       var byteString = atob(dataURI.split(",")[1]);
 
       // separate out the mime component
-      var mimeString = dataURI
-        .split(",")[0]
-        .split(":")[1]
-        .split(";")[0];
+      var mimeString = dataURI.split(",")[0].split(":")[1].split(";")[0];
 
       // write the bytes of the string to an ArrayBuffer
       var ab = new ArrayBuffer(byteString.length);
@@ -186,93 +185,93 @@ export default {
       var blob = new Blob([ab], { type: mimeString });
       return blob;
     },
-    getLocation(){
+    getLocation() {
       this.locationLoading = true;
-      navigator.geolocation.getCurrentPosition(position => {
-        this.getCityAndCountry(position)
-      }, err => this.loactionError(),
-      {timeout: 7000})
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          this.getCityAndCountry(position);
+        },
+        (err) => this.loactionError(),
+        { timeout: 7000 }
+      );
     },
-    getCityAndCountry(position){
-      let {latitude, longitude} = position.coords;
-      let ApiUrl = `https://geocode.xyz/${latitude},${longitude}?json=1`
+    getCityAndCountry(position) {
+      let { latitude, longitude } = position.coords;
+      let ApiUrl = `https://geocode.xyz/${latitude},${longitude}?json=1`;
 
-      this.$axios.get(ApiUrl)
-      .then(response => {
-        this.locationSuccess(response)
-      })
-      .catch(err => this.loactionError())
+      this.$axios
+        .get(ApiUrl)
+        .then((response) => {
+          this.locationSuccess(response);
+        })
+        .catch((err) => this.loactionError());
     },
-    locationSuccess(res){
-      let {city} = res.data;
-      this.post.location  = city;
+    locationSuccess(res) {
+      let { city } = res.data;
+      this.post.location = city;
 
-      if(res.data.country){
-        this.post.location += `, ${res.data.country}`
+      if (res.data.country) {
+        this.post.location += `, ${res.data.country}`;
       }
       this.locationLoading = false;
     },
-    loactionError(){
+    loactionError() {
       this.$q.dialog({
-        title: 'Error',
-        message: 'Could not find location'
-      })
+        title: "Error",
+        message: "Could not find location",
+      });
       this.locationLoading = false;
-
     },
-    addPost(){
-        this.$q.loading.show()
+    addPost() {
+      this.$q.loading.show();
       let formData = new FormData();
-      formData.append('id', this.post.id);
-      formData.append('caption', this.post.caption);
-      formData.append('location', this.post.location);
-      formData.append('date', this.post.date);
-      formData.append('file', this.post.photo, this.post.id + '.png');
+      formData.append("id", this.post.id);
+      formData.append("caption", this.post.caption);
+      formData.append("location", this.post.location);
+      formData.append("date", this.post.date);
+      formData.append("file", this.post.photo, this.post.id + ".png");
 
-      this.$axios.post(`${process.env.API}/createPost`, formData)
-      .then(res => {
-        console.log(res)
-        // after taking photo rout back to main page
-        this.$router.push('/')
-        // notification after beind redirected to main page
-        this.$q.notify({
-          message: 'Post Created.',
-          actions: [
-          { label: 'Dismiss', color: 'white' },
-          { label: 'Post another', color: 'white',
-            handler: () => {
-              this.$router.push('/camera')
-            } 
-          }
-          ,
-        ]
-        }
-      )
-        this.$q.loading.hide()
-      })
-      .catch(err => {
-        console.log('error')
-        this.$q.notify({
-          color: 'red',
-          actions: [
-            { label: 'Sorry post not created', color: 'white'}
-          ]
+      this.$axios
+        .post(`${process.env.API}/createPost`, formData)
+        .then((res) => {
+          console.log(res);
+          // after taking photo rout back to main page
+          this.$router.push("/");
+          // notification after beind redirected to main page
+          this.$q.notify({
+            message: "Post Created.",
+            actions: [
+              { label: "Dismiss", color: "white" },
+              {
+                label: "Post another",
+                color: "white",
+                handler: () => {
+                  this.$router.push("/camera");
+                },
+              },
+            ],
+          });
+          this.$q.loading.hide();
         })
-        this.$q.loading.hide()
-        })
+        .catch((err) => {
+          console.log("error");
+          this.$q.notify({
+            color: "red",
+            actions: [{ label: "Sorry post not created", color: "white" }],
+          });
+          this.$q.loading.hide();
+        });
     },
-
-
   },
   mounted() {
     this.initCamera();
   },
 
-  beforeDestroy(){
-    if(this.hasCameraSupport){
-      this.disableCamera()
+  beforeDestroy() {
+    if (this.hasCameraSupport) {
+      this.disableCamera();
     }
-  }
+  },
 };
 </script>
 
